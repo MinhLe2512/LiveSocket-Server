@@ -5,26 +5,25 @@ import java.awt.EventQueue;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.function.ObjIntConsumer;
+
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import frame.EditMatchFrame;
-import frame.LoginFrame;
+import frame.AdminLoginFrame;
 import frame.UpdateMatchFrame;
 import model.Event;
 import model.Login;
 import model.Match;
 
-public class WindowAdminLogin {
+public class AdminWindow {
 
-	private static LoginFrame frmAdminLogin;
-	//private static JFrame frmEditMatch;
+	private static AdminLoginFrame frmAdminLogin;
 	private EditMatchFrame frmEditMatch;
 	private UpdateMatchFrame frmUpdateMatch;
 	private JFrame errorMessage;
@@ -41,16 +40,16 @@ public class WindowAdminLogin {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					new WindowAdminLogin();
+					new AdminWindow();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
 	}
-	public WindowAdminLogin() {
+	public AdminWindow() {
 		// TODO Auto-generated constructor stub
-		frmAdminLogin = new LoginFrame(this);
+		frmAdminLogin = new AdminLoginFrame(this);
 		frmUpdateMatch = new UpdateMatchFrame(this);
 		frmAdminLogin.setVisible(true);
 	}
@@ -60,17 +59,10 @@ public class WindowAdminLogin {
 		try {
 			adminSocket = new Socket("localhost", port);
 			new Thread(new LoginListener()).start();
+			objOut = new ObjectOutputStream(adminSocket.getOutputStream());
 			//Send account
-			String str1 = frmAdminLogin.getUser(),
-					str2 = frmAdminLogin.getPassword();
-			Login acc = new Login(str1, str2, "Admin");
-			try {
-				objOut = new ObjectOutputStream(adminSocket.getOutputStream());
-				objOut.writeObject(acc);
-			} catch (IOException e1) {
-				JOptionPane.showMessageDialog(errorMessage, "Can't send object", "Error", JOptionPane.WARNING_MESSAGE);
-				e1.printStackTrace();
-			}
+			objOut.writeUTF("ADMINLOGIN");
+			objOut.flush();
 
 		} catch (Exception err) {
 			//addToLogs("[ERROR] "+err.getLocalizedMessage());
@@ -93,19 +85,19 @@ public class WindowAdminLogin {
 	}
 
 	private class LoginListener implements Runnable {
-		private BufferedReader in;
+		private ObjectInputStream in;
 		@Override
 		public void run() {
 			try {
-				in = new BufferedReader(new InputStreamReader(adminSocket.getInputStream()));
+				in = new ObjectInputStream(adminSocket.getInputStream());
 				String read;
 				while (true) {
-					read = in.readLine();
+					read = in.readUTF();
 					if (read.equals("CONNECTED")) {
 						frmAdminLogin.setVisible(false);
 						
 						//initFrameEditMatch();
-						frmEditMatch = new EditMatchFrame(WindowAdminLogin.this);
+						frmEditMatch = new EditMatchFrame(AdminWindow.this);
 						frmEditMatch.setVisible(true);
 					}
 					else if (read.equals("FAILED")) {
@@ -115,8 +107,35 @@ public class WindowAdminLogin {
 					}
 					else if (read.equals("UPDATED")) {
 						//updateMatch();
+						frmEditMatch.clearText();
 						JOptionPane.showMessageDialog(errorMessage,
 								"Data has been updated", read, JOptionPane.DEFAULT_OPTION);
+					}
+					else if (read.equals("EVENT UPDATE")) {
+						String event = frmUpdateMatch.getTxtEvent(),
+								name = frmUpdateMatch.getTxtName(),
+								evTime = frmUpdateMatch.getTpMomment(),
+								id = frmUpdateMatch.getTxtID();
+						Event ev = new Event(id, evTime, event, name);
+						objOut.writeObject(ev);
+					}
+					else if (read.equals("DONE")) {
+						frmUpdateMatch.clearText();
+						JOptionPane.showMessageDialog(errorMessage, 
+								"Date has been updated", read, JOptionPane.DEFAULT_OPTION);
+					}
+					else if (read.equals("ADMIN")) {
+						String str1 = frmAdminLogin.getUser(),
+								str2 = frmAdminLogin.getPassword();
+						Login acc = new Login(str1, str2, "Admin");
+						try {
+							objOut.writeObject(acc);
+							objOut.flush();
+						} catch (IOException e1) {
+							JOptionPane.showMessageDialog(errorMessage, 
+									"Can't send object", "Error", JOptionPane.WARNING_MESSAGE);
+							e1.printStackTrace();
+						}
 					}
 				}
 			}catch (IOException e) { return; }
@@ -130,11 +149,12 @@ public class WindowAdminLogin {
 		
 		LocalDateTime tgian = frmEditMatch.getDate();
 		
-		Match match = new Match(id, home, away, 0, 0, tgian, "new", null);
+		Match match = new Match(id, home, away, 0, 0, tgian, "new match");
 		try {
 			objOut.writeObject(match);
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(errorMessage, "Can't new match", "Error", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(errorMessage, 
+					"Can't new match", "Error", JOptionPane.WARNING_MESSAGE);
 			e.printStackTrace();
 		}
 		
@@ -143,20 +163,15 @@ public class WindowAdminLogin {
 	public void updateMatch() {
 //		initUpdateFrame();
 		String id = frmUpdateMatch.getTxtID(),
-				event = frmUpdateMatch.getTxtEvent(),
-				name = frmUpdateMatch.getName(),
-				home = frmEditMatch.getTxtHome(),
-				away = frmEditMatch.getTxtAway();
+				home = frmUpdateMatch.getTxtHome(),
+				away = frmUpdateMatch.getTxtAway();
 		
-		LocalDateTime time = frmEditMatch.getDate();
+		LocalDateTime time = frmUpdateMatch.getUpdateTime();
 		
 		int scoreHome = frmUpdateMatch.getHomeScore(),
 				scoreAway = frmUpdateMatch.getAwayScore();
-		
-		LocalTime evTime = frmUpdateMatch.getTpMomment();
-		Event ev = new Event(evTime, event, name);
 
-		Match match = new Match(id, home, away, scoreHome, scoreAway, time, "update", ev);
+		Match match = new Match(id, home, away, scoreHome, scoreAway, time, "update");
 		
 		try {
 			objOut.writeObject(match);

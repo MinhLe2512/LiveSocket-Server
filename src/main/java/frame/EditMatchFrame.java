@@ -2,6 +2,7 @@ package frame;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -24,30 +25,35 @@ import javax.swing.UIManager;
 import com.github.lgooddatepicker.components.DateTimePicker;
 import com.github.lgooddatepicker.components.TimePicker;
 
+import model.JPanelWithBackground;
 import model.Match;
-import window.WindowAdminLogin;
+import window.AdminWindow;
 
 
 public class EditMatchFrame extends JFrame {
 
 	private JPanel contentPane;
 	
-	private JButton btnUpdate;
-	private JButton btnLogout;
-	private JButton btnNew;
+	private JButton btnUpdate, btnLogout, btnNew;
 	
-	private JTextField txtID;
-	private JTextField txtHome;
-	private JTextField txtAway;
+	private JTextField txtID, txtHome, txtAway;
 	
 	private DateTimePicker dtp;
-	private TimePicker tp;
 	
 	private static JFrame errorMessage;
 	
-	public EditMatchFrame(WindowAdminLogin defaultWindow) {
-
-		contentPane = new JPanel();
+	public EditMatchFrame(AdminWindow defaultWindow) {
+		setBackground(new Color(255, 255, 255));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(
+				"C:\\Users\\DELL\\Downloads\\livescore_icon.png"));
+		setResizable(false);
+			try {
+				contentPane = new JPanelWithBackground(
+						"C:\\Users\\DELL\\Downloads\\livescore_bg.png");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		contentPane.setLayout(null);
 		contentPane.setFont(UIManager.getFont("Panel.font"));
 		contentPane.setForeground(new Color(255, 255, 255));
@@ -56,9 +62,11 @@ public class EditMatchFrame extends JFrame {
 		contentPane.setSize(480, 550);
 		setBounds(200, 200, 480 , 550);
 		setContentPane(contentPane);
-
+		setLocationRelativeTo(null);
+		
 		//Label Edit match
 		JLabel lblNewLabel = new JLabel("Edit Match");
+		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblNewLabel.setBounds(0, 0, 450, 60);
@@ -102,6 +110,7 @@ public class EditMatchFrame extends JFrame {
 		contentPane.add(btnNew);
 		
 		JLabel lblNewLabel_1 = new JLabel("Match ID");
+		lblNewLabel_1.setForeground(Color.WHITE);
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblNewLabel_1.setBounds(40, 60, 100, 13);
 		contentPane.add(lblNewLabel_1);
@@ -118,11 +127,13 @@ public class EditMatchFrame extends JFrame {
 		contentPane.add(txtHome);
 		
 		JLabel lblNewLabel_1_1 = new JLabel("Time");
+		lblNewLabel_1_1.setForeground(Color.WHITE);
 		lblNewLabel_1_1.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblNewLabel_1_1.setBounds(40, 135, 100, 13);
 		contentPane.add(lblNewLabel_1_1);
 		
 		JLabel lblNewLabel_1_3_2 = new JLabel("Home");
+		lblNewLabel_1_3_2.setForeground(Color.WHITE);
 		lblNewLabel_1_3_2.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblNewLabel_1_3_2.setBounds(40, 285, 100, 13);
 		contentPane.add(lblNewLabel_1_3_2);
@@ -149,6 +160,7 @@ public class EditMatchFrame extends JFrame {
 		contentPane.add(txtAway);
 		
 		JLabel lblNewLabel_1_3_2_1 = new JLabel("Away");
+		lblNewLabel_1_3_2_1.setForeground(Color.WHITE);
 		lblNewLabel_1_3_2_1.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblNewLabel_1_3_2_1.setBounds(250, 286, 100, 13);
 		contentPane.add(lblNewLabel_1_3_2_1);
@@ -162,9 +174,15 @@ public class EditMatchFrame extends JFrame {
 	public LocalDateTime getDate() { 
 		LocalDate date = dtp.getDatePicker().getDate();
 		LocalTime time1 = dtp.getTimePicker().getTime();
+		if (date == null || time1 == null)
+			return null;
 		LocalDateTime tgian = LocalDateTime.of(date, time1);
 		return tgian;
 	}
 	
-	
+	public void clearText() {
+		txtID.setText(""); 
+		txtHome.setText("");
+		txtAway.setText("");
+	}
 }

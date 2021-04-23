@@ -2,6 +2,7 @@ package model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 
 public class Match implements Serializable{
@@ -13,10 +14,9 @@ public class Match implements Serializable{
 	private int scoreAway;
 	private LocalDateTime time;
 	private String objID;
-	private Event ev;
 	
-	public Match(String matchID, String home, String away, int scoreHome, int scoreAway
-			, LocalDateTime time, String objID, Event ev) {
+	public Match(String matchID, String home, String away, int scoreHome,
+			int scoreAway, LocalDateTime time, String objID) {
 		this.objID = objID;
 		this.matchID = matchID;
 		this.home = home;
@@ -24,9 +24,7 @@ public class Match implements Serializable{
 		this.scoreHome = scoreHome;
 		this.scoreAway = scoreAway;
 		this.time = time;
-		this.ev = ev;
 	}
-	
 	
 	public String getID() { return matchID; }
 	public String getHome() { return home; }
@@ -35,6 +33,5 @@ public class Match implements Serializable{
 	public int getScoreAway() { return scoreAway; }
 	public LocalDateTime getTime() { return time; }
 	public String getObjID() { return objID; }
-	public Event getEvent() { return ev; }
 	
 }

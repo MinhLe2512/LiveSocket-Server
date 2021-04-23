@@ -1,6 +1,10 @@
 package model;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 
 public class Register implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -8,12 +12,13 @@ public class Register implements Serializable {
 	private String firstName;
 	private String lastName;
 	private String pw;
-	private String dob;
+	private LocalDate dob;
 	private String telNo;
 	private String address;
 	private String objID;
 	
-	public Register(String userName, String firstName, String lastName, String pw, String dob, String telNo, String address, String objID) {
+	public Register(String userName, String pw, String lastName,  String firstName, 
+			LocalDate dob, String address, String telNo, String objID) {
 		this.userName = userName;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -28,7 +33,7 @@ public class Register implements Serializable {
 	public String getFirstname(){ return firstName; }
 	public String getLastname(){ return lastName; }
 	public String getPassword(){ return pw; }
-	public String getDob(){ return dob; }
+	public LocalDate getDob(){ return dob; }
 	public String getTelNo(){ return telNo; }
 	public String getAddress(){ return address; }
 	public String getObjID(){ return objID; }
