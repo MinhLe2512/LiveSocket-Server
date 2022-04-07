@@ -34,16 +34,16 @@ public class ServerFrame extends JFrame {
 	 */
 	public ServerFrame(ServerWindow defaultWindow) {
 		setBackground(new Color(255, 255, 255));
-		setIconImage(Toolkit.getDefaultToolkit().getImage(
-				"C:\\Users\\DELL\\Downloads\\livescore_icon.png"));
+		//setIconImage(Toolkit.getDefaultToolkit().getImage(
+				//"C:\\Users\\DELL\\Downloads\\livescore_icon.png"));
 		setResizable(false);
-			try {
-				contentPane = new JPanelWithBackground(
-						"C:\\Users\\DELL\\Downloads\\livescore_bg.png");
-			} catch (IOException e1) {
+			//try {
+				//contentPane = new JPanelWithBackground("C:\\Users\\DELL\\Downloads\\livescore_bg.png");
+			//} catch (IOException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+				//e1.printStackTrace();
+			//}
+		contentPane = new JPanel();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 570, 400);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

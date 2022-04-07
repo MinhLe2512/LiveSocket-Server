@@ -190,6 +190,10 @@ public class ServerWindow {
 						}
 					}
 					else if (message.equals("Register")) {
+
+						Login guest = new Login("guest "+ connectedClients.size()
+						, "guest", "client");
+						name = guest;
 						addToLogs("Registering");
 						objOut.writeUTF("Begin registering");
 						objOut.flush();
@@ -198,7 +202,6 @@ public class ServerWindow {
 					}
 				}
 				synchronized (connectedClients) {
-					//!name.getU().isEmpty() &&
 					if (!connectedClients.keySet().contains(name.getU()))
 						connectedClients.put(name.getU(), out);
 					else { 
